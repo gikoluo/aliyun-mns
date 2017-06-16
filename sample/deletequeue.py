@@ -22,6 +22,7 @@ my_queue = my_account.get_queue(queue_name)
 #删除队列
 try:
     my_queue.delete()
-    print "Delete Queue Succeed! QueueName:%s\n" % queue_name
+    print("Delete Queue Succeed! QueueName:%s\n" % queue_name)
 except MNSExceptionBase, e:
-    print "Delete Queue Fail! Exception:%s\n" % e
+    print("Delete Queue Fail! Exception:%s\n" % e
+)

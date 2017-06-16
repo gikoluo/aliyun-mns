@@ -10,8 +10,11 @@
 
 import time
 import socket
-from httplib import HTTPConnection, BadStatusLine, HTTPSConnection
-from mns_exception import *
+
+from .compat import HTTPConnection, BadStatusLine, HTTPSConnection
+
+
+from .mns_exception import *
 
 class MNSHTTPConnection(HTTPConnection):
     def __init__(self, host, port=None, strict=None, connection_timeout=60):
@@ -36,22 +39,22 @@ class MNSHTTPConnection(HTTPConnection):
                 self.sock = socket.socket(af, socktype, proto)
                 self.sock.settimeout(self.connection_timeout)
                 if self.debuglevel > 0:
-                    print "connect: (%s, %s)" % (self.host, self.port)
+                    print("connect: (%s, %s)" % (self.host, self.port))
                 self.sock.connect(sa)
-            except socket.error, msg:
+            except socket.error as msg:
                 if self.debuglevel > 0:
-                    print 'connect fail:', (self.host, self.port)
+                    print('connect fail:', (self.host, self.port))
                 if self.sock:
                     self.sock.close()
                 self.sock = None
                 continue
             break
         if not self.sock:
-            raise socket.error, msg
+            raise socket.error( msg )
 
 class MNSHTTPSConnection(HTTPSConnection):
     def __init__(self, host, port=None, strict=None):
-        HTTPSConnection.__init__(self, host, port, strict=strict)
+        HTTPSConnection.__init__(self, host, port)
         self.request_length = 0
 
     def send(self, str):
@@ -113,7 +116,11 @@ class MNSHttp:
                 self.conn.request(req_inter.method, req_inter.uri, req_inter.data, req_inter.header)
                 self.conn.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
                 http_resp = self.conn.getresponse()
-            headers = dict(http_resp.getheaders())
+            try:
+                headers = http_resp.headers
+            except:
+                headers = dict(http_resp.getheaders())
+
             resp_inter = ResponseInternal(status = http_resp.status, header = headers, data = http_resp.read())
             self.request_size = self.conn.request_length
             self.response_size = len(resp_inter.data)
@@ -122,7 +129,7 @@ class MNSHttp:
             if self.logger:
                 self.logger.debug("GetResponse %s" % resp_inter)
             return resp_inter
-        except Exception,e:
+        except Exception as e:
             self.conn.close()
             raise MNSClientNetworkException("NetWorkException", str(e), req_inter.get_req_id()) #raise netException
 

@@ -30,25 +30,26 @@ my_queue.set_encoding(base64)
 ### 当队列中没有消息时，请求在MNS服务器端挂3秒钟，在这期间，有消息写入队列，请求会立即返回消息，3秒后，请求返回队列没有消息；
 
 wait_seconds = 3
-print "%sReceive And Delete Message From Queue%s\nQueueName:%s\nWaitSeconds:%s\n" % (10*"=", 10*"=", queue_name, wait_seconds)
+print("%sReceive And Delete Message From Queue%s\nQueueName:%s\nWaitSeconds:%s\n" % (10*"=", 10*"=", queue_name, wait_seconds))
 while True:
     #读取消息
     try:
         recv_msg = my_queue.receive_message(wait_seconds)
-        print "Receive Message Succeed! ReceiptHandle:%s MessageBody:%s MessageID:%s" % (recv_msg.receipt_handle, recv_msg.message_body, recv_msg.message_id)
+        print("Receive Message Succeed! ReceiptHandle:%s MessageBody:%s MessageID:%s" % (recv_msg.receipt_handle, recv_msg.message_body, recv_msg.message_id))
     except MNSExceptionBase,e:
         if e.type == "QueueNotExist":
-            print "Queue not exist, please create queue before receive message."
+            print("Queue not exist, please create queue before receive message.")
             sys.exit(0)
         elif e.type == "MessageNotExist":
-            print "Queue is empty!"
+            print("Queue is empty!")
             sys.exit(0)
-        print "Receive Message Fail! Exception:%s\n" % e
+        print("Receive Message Fail! Exception:%s\n" % e)
         continue
 
     #删除消息
     try:
         my_queue.delete_message(recv_msg.receipt_handle)
-        print "Delete Message Succeed!  ReceiptHandle:%s" % recv_msg.receipt_handle
+        print("Delete Message Succeed!  ReceiptHandle:%s" % recv_msg.receipt_handle)
     except MNSException,e:
-        print "Delete Message Fail! Exception:%s\n" % e
+        print("Delete Message Fail! Exception:%s\n" % e
+)

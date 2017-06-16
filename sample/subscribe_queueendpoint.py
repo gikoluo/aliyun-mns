@@ -13,7 +13,7 @@ from mns.topic import *
 from mns.subscription import *
 
 if len(sys.argv) < 3:
-    print "Please specify endpoint. e.g. python subscribe_queueendpoint.py cn-hanghzou MySampleSubQueue"
+    print("Please specify endpoint. e.g. python subscribe_queueendpoint.py cn-hanghzou MySampleSubQueue")
     sys.exit(1)
 region = sys.argv[1]
 queue_name = sys.argv[2]
@@ -37,12 +37,13 @@ my_sub = my_topic.get_subscription(sub_name)
 sub_meta = SubscriptionMeta(queue_endpoint, notify_content_format = SubscriptionNotifyContentFormat.SIMPLIFIED)
 try:
     topic_url = my_sub.subscribe(sub_meta)
-    print "Create Subscription Succeed! TopicName:%s SubName:%s Endpoint:%s\n" % (topic_name, sub_name, queue_endpoint)
+    print("Create Subscription Succeed! TopicName:%s SubName:%s Endpoint:%s\n" % (topic_name, sub_name, queue_endpoint))
 except MNSExceptionBase, e:
     if e.type == "TopicNotExist":
-        print "Topic not exist, please create topic."
+        print("Topic not exist, please create topic.")
         sys.exit(0)
     elif e.type == "SubscriptionAlreadyExist":
-        print "Subscription already exist, please unsubscribe or use it directly."
+        print("Subscription already exist, please unsubscribe or use it directly.")
         sys.exit(0)
-    print "Create Subscription Fail! Exception:%s\n" % e
+    print("Create Subscription Fail! Exception:%s\n" % e
+)

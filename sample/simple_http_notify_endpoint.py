@@ -135,7 +135,7 @@ class SimpleHttpNotifyEndpoint(BaseHTTPServer.BaseHTTPRequestHandler):
         if self.request_version != 'HTTP/0.9':
             self.wfile.write("%s %d %s\r\n" %
                              (self.protocol_version, code, message))
-            # print (self.protocol_version, code, message)
+            # print((self.protocol_version, code, message))
         self.send_header('Server', self.version_string())
         self.send_header('Date', self.date_time_string())
 
@@ -151,7 +151,7 @@ class SimpleHttpNotifyEndpoint(BaseHTTPServer.BaseHTTPRequestHandler):
             else:
                 item_list.append("-")
         acc_log = "[%s]" % self.log_date_time_string() + " ".join(["\"%s\"" % item for item in item_list]) + "\n"
-        print acc_log,
+        print(acc_log,)
         open(self.access_log_file, 'a').write(acc_log)
 
 class ThreadedHTTPServer(SocketServer.ThreadingMixIn, BaseHTTPServer.HTTPServer):
@@ -197,13 +197,13 @@ def main(port, endpoint_class = SimpleHttpNotifyEndpoint, msg_type="XML", prefix
     #start endpoint
     ip_addr = socket.gethostbyname(socket.gethostname())
     addr_info = "Start Endpoint! Address: %s%s:%s" % (prefix, ip_addr, port)
-    print addr_info
+    print(addr_info)
     try:
         logger.info(addr_info)
         server = ThreadedHTTPServer(('', port), endpoint_class)
         server.serve_forever()
     except KeyboardInterrupt:
-        print "Shutting down the simple notify endpoint!"
+        print("Shutting down the simple notify endpoint!")
         server.socket.close()
 
 if __name__ == "__main__":

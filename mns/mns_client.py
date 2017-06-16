@@ -13,12 +13,12 @@ import hmac
 import base64
 import string
 import platform
-import pkg_info
-from  mns_xml_handler import *
-from mns_exception import *
-from mns_request import *
-from mns_tool import *
-from mns_http import *
+from . import pkg_info
+from .mns_xml_handler import *
+from .mns_exception import *
+from .mns_request import *
+from .mns_tool import *
+from .mns_http import *
 
 URISEC_QUEUE = "queues"
 URISEC_MESSAGE = "messages"
@@ -108,6 +108,8 @@ class MNSClient:
         #handle result, make response
         resp.status = resp_inter.status
         resp.header = resp_inter.header
+        print(resp)
+        print(resp.header)
         self.check_status(req_inter, resp_inter, resp)
         if resp.error_data == "":
             resp.queue_url = resp.header["location"]
@@ -201,17 +203,17 @@ class MNSClient:
         self.check_status(req_inter, resp_inter, resp)
         if resp.error_data == "":
             queue_attr = GetQueueAttrDecoder.decode(resp_inter.data, req_inter.get_req_id())
-            resp.active_messages = string.atoi(queue_attr["ActiveMessages"])
-            resp.create_time = string.atoi(queue_attr["CreateTime"])
-            resp.delay_messages = string.atoi(queue_attr["DelayMessages"])
-            resp.delay_seconds = string.atoi(queue_attr["DelaySeconds"])
-            resp.inactive_messages = string.atoi(queue_attr["InactiveMessages"])
-            resp.last_modify_time = string.atoi(queue_attr["LastModifyTime"])
-            resp.maximum_message_size = string.atoi(queue_attr["MaximumMessageSize"])
-            resp.message_retention_period = string.atoi(queue_attr["MessageRetentionPeriod"])
+            resp.active_messages = int(queue_attr["ActiveMessages"])
+            resp.create_time = int(queue_attr["CreateTime"])
+            resp.delay_messages = int(queue_attr["DelayMessages"])
+            resp.delay_seconds = int(queue_attr["DelaySeconds"])
+            resp.inactive_messages = int(queue_attr["InactiveMessages"])
+            resp.last_modify_time =  int(queue_attr["LastModifyTime"])
+            resp.maximum_message_size = int(queue_attr["MaximumMessageSize"])
+            resp.message_retention_period = int(queue_attr["MessageRetentionPeriod"])
             resp.queue_name = queue_attr["QueueName"]
-            resp.visibility_timeout = string.atoi(queue_attr["VisibilityTimeout"])
-            resp.polling_wait_seconds = string.atoi(queue_attr["PollingWaitSeconds"])
+            resp.visibility_timeout = int(queue_attr["VisibilityTimeout"])
+            resp.polling_wait_seconds = int(queue_attr["PollingWaitSeconds"])
             resp.logging_enabled = True if queue_attr["LoggingEnabled"].lower() == "true" else False
             if self.logger:
                 self.logger.info("GetQueueAttributes RequestId:%s QueueName:%s" % (resp.get_requestid(), req.queue_name))
@@ -222,6 +224,7 @@ class MNSClient:
 
         #make request internal
         req_inter = RequestInternal(req.method, uri = "/%s/%s/%s" % (URISEC_QUEUE, req.queue_name, URISEC_MESSAGE))
+        print(req)
         req_inter.data = MessageEncoder.encode(req)
         self.build_header(req, req_inter)
 
@@ -537,11 +540,11 @@ class MNSClient:
         self.check_status(req_inter, resp_inter, resp)
         if resp.error_data == "":
             topic_attr = GetTopicAttrDecoder.decode(resp_inter.data, req_inter.get_req_id())
-            resp.message_count = string.atoi(topic_attr["MessageCount"])
-            resp.create_time = string.atoi(topic_attr["CreateTime"])
-            resp.last_modify_time = string.atoi(topic_attr["LastModifyTime"])
-            resp.maximum_message_size = string.atoi(topic_attr["MaximumMessageSize"])
-            resp.message_retention_period = string.atoi(topic_attr["MessageRetentionPeriod"])
+            resp.message_count = int(topic_attr["MessageCount"])
+            resp.create_time = int(topic_attr["CreateTime"])
+            resp.last_modify_time = int(topic_attr["LastModifyTime"])
+            resp.maximum_message_size = int(topic_attr["MaximumMessageSize"])
+            resp.message_retention_period = int(topic_attr["MessageRetentionPeriod"])
             resp.topic_name = topic_attr["TopicName"]
             resp.logging_enabled = True if topic_attr["LoggingEnabled"].lower() == "true" else False
             if self.logger:
@@ -681,11 +684,11 @@ class MNSClient:
             resp.topic_name = subscription_attr["TopicName"]
             resp.subscription_name = subscription_attr["SubscriptionName"]
             resp.endpoint = subscription_attr["Endpoint"]
-            resp.filter_tag = subscription_attr["FilterTag"] if subscription_attr.has_key("FilterTag") else ""
+            resp.filter_tag = getattr(subscription_attr, "FilterTag", "") # if subscription_attr.has_key("FilterTag") else ""
             resp.notify_strategy = subscription_attr["NotifyStrategy"]
             resp.notify_content_format = subscription_attr["NotifyContentFormat"]
-            resp.create_time = string.atoi(subscription_attr["CreateTime"])
-            resp.last_modify_time = string.atoi(subscription_attr["LastModifyTime"])
+            resp.create_time = int(subscription_attr["CreateTime"])
+            resp.last_modify_time = int(subscription_attr["LastModifyTime"])
             if self.logger:
                 self.logger.info("GetSubscriptionAttributes RequestId:%s TopicName:%s SubscriptionName:%s" % \
                     (resp.get_requestid(), req.topic_name, req.subscription_name))
@@ -699,7 +702,7 @@ class MNSClient:
         if self.http.is_keep_alive():
             req_inter.header["Connection"] = "Keep-Alive"
         if req_inter.data != "":
-            req_inter.header["content-md5"] = base64.b64encode(hashlib.md5(req_inter.data).hexdigest())
+            req_inter.header["content-md5"] = base64.b64encode(hashlib.md5(req_inter.data).hexdigest().encode('UTF-8')).decode()
             req_inter.header["content-type"] = "text/xml;charset=UTF-8"
         req_inter.header["x-mns-version"] = self.version
         req_inter.header["host"] = self.host
@@ -717,17 +720,24 @@ class MNSClient:
         canonicalized_resource = resource
         canonicalized_mns_headers = ""
         if len(headers) > 0:
-            x_header_list = headers.keys()
-            x_header_list.sort()
+            try:
+                x_header_list = headers.keys()
+                x_header_list.sort()
+            except:
+                x_header_list = sorted(headers)
+
             for k in x_header_list:
                 if k.startswith('x-mns-'):
                     canonicalized_mns_headers += k + ":" + headers[k] + "\n"
         string_to_sign = "%s\n%s\n%s\n%s\n%s%s" % (method, content_md5, content_type, date, canonicalized_mns_headers, canonicalized_resource)
         #hmac only support str in python2.7
-        tmp_key = self.access_key.encode('utf-8') if isinstance(self.access_key, unicode) else self.access_key
-        h = hmac.new(tmp_key, string_to_sign, hashlib.sha1)
-        signature = base64.b64encode(h.digest())
-        signature = "MNS " + self.access_id + ":" + signature
+        #string_to_sign = "abcd"
+        tmp_key = self.access_key # if isinstance(self.access_key, str) else self.access_key
+        h = hmac.new(tmp_key.encode('utf-8'), string_to_sign.encode('utf-8'), hashlib.sha1)
+        signature = base64.b64encode(h.digest()).decode()
+        print("DEBUG:", tmp_key, signature, string_to_sign)
+        signature = ("MNS %s:%s" % (self.access_id, signature))
+        print(signature)
         return signature
 
     def get_element(self, name, container):
@@ -737,6 +747,7 @@ class MNSClient:
             return ""
 
     def check_status(self, req_inter, resp_inter, resp, decoder=ErrorDecoder):
+        print (resp.header)
         if resp_inter.status >= 200 and resp_inter.status < 400:
             resp.error_data = ""
         else:
@@ -750,24 +761,24 @@ class MNSClient:
                 raise MNSClientNetworkException("UnkownError", resp_inter.data, req_inter.get_req_id())
 
     def make_recvresp(self, data, resp):
-        resp.dequeue_count = string.atoi(data["DequeueCount"])
-        resp.enqueue_time = string.atoi(data["EnqueueTime"])
-        resp.first_dequeue_time = string.atoi(data["FirstDequeueTime"])
+        resp.dequeue_count = int(data["DequeueCount"])
+        resp.enqueue_time = int(data["EnqueueTime"])
+        resp.first_dequeue_time = int(data["FirstDequeueTime"])
         resp.message_body = data["MessageBody"]
         resp.message_id = data["MessageId"]
         resp.message_body_md5 = data["MessageBodyMD5"]
-        resp.next_visible_time = string.atoi(data["NextVisibleTime"])
+        resp.next_visible_time = int(data["NextVisibleTime"])
         resp.receipt_handle = data["ReceiptHandle"]
-        resp.priority = string.atoi(data["Priority"])
+        resp.priority = int(data["Priority"])
 
     def make_peekresp(self, data, resp):
-        resp.dequeue_count = string.atoi(data["DequeueCount"])
-        resp.enqueue_time = string.atoi(data["EnqueueTime"])
-        resp.first_dequeue_time = string.atoi(data["FirstDequeueTime"])
+        resp.dequeue_count = int(data["DequeueCount"])
+        resp.enqueue_time = int(data["EnqueueTime"])
+        resp.first_dequeue_time = int(data["FirstDequeueTime"])
         resp.message_body = data["MessageBody"]
         resp.message_id = data["MessageId"]
         resp.message_body_md5 = data["MessageBodyMD5"]
-        resp.priority = string.atoi(data["Priority"])
+        resp.priority = int(data["Priority"])
 
     def process_host(self, host):
         if host.startswith("http://"):

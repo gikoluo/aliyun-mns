@@ -8,9 +8,9 @@
 #THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import time
-from mns_client import MNSClient
-from mns_request import *
-from mns_exception import *
+from .mns_client import MNSClient
+from .mns_request import *
+from .mns_exception import *
 
 class Subscription:
     def __init__(self, topic_name, subscription_name, mns_client, debug=False):
@@ -114,10 +114,10 @@ class Subscription:
 
     def debuginfo(self, resp):
         if self.debug:
-            print "===================DEBUG INFO==================="
-            print "RequestId: %s" % resp.header["x-mns-request-id"]
-            print "================================================"
-
+            print("===================DEBUG INFO===================")
+            print("RequestId: %s" % resp.header["x-mns-request-id"])
+            print("================================================"
+)
     def __resp2meta__(self, subscription_meta, resp):
         subscription_meta.topic_owner = resp.topic_owner
         subscription_meta.topic_name = resp.topic_name

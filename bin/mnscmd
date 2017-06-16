@@ -77,7 +77,7 @@ class MNSCmd:
 
         cfgfile = open(CONFIGFILE, "w+")
         config.write(cfgfile)
-        print "Your configuration is saved into %s ." % CONFIGFILE
+        print("Your configuration is saved into %s ." % CONFIGFILE)
         cfgfile.close()
         import stat
         os.chmod(CONFIGFILE, stat.S_IREAD | stat.S_IWRITE)
@@ -89,7 +89,7 @@ class MNSCmd:
             if (options.mnsendpoint is None and not config.has_option(CONFIGSECTION, ENDPOINT)) or \
                 (options.accesskeyid is None and not config.has_option(CONFIGSECTION, ACCESSKEYID)) or \
                 (options.accesskeysecret is None and not config.has_option(CONFIGSECTION, ACCESSKEYSECRET)):
-                    print "Missing credentials in %s. Use \"mnscmd config\" to init credentials." % CONFIGFILE
+                    print("Missing credentials in %s. Use \"mnscmd config\" to init credentials." % CONFIGFILE)
                     sys.exit(-1)
 
             self.mnsendpoint = options.mnsendpoint if options.mnsendpoint is not None else config.get(CONFIGSECTION, ENDPOINT)
@@ -102,8 +102,8 @@ class MNSCmd:
             self.account = Account(self.mnsendpoint, self.accesskeyid, self.accesskeysecret, self.token)
             self.account.set_debug(True)
         except Exception:
-            print "Can't get credentials. Use \"mnscmd config\" to init credentials."
-            print traceback.print_exc()
+            print("Can't get credentials. Use \"mnscmd config\" to init credentials.")
+            print(traceback.print_exc())
             sys.exit(-1)
 
     def setaccountattr(self, args, options):
@@ -130,12 +130,12 @@ class MNSCmd:
             MNSCmd.cmd_succeed(args[0])
 
             if len(queueurl_list) == 0:
-                print "Queue not exist in this account."
+                print("Queue not exist in this account.")
             else:
-                print "\n".join(["QueueURL:%s" % item for item in queueurl_list])
-                print "\nListQueueNumber:%s" % len(queueurl_list)
+                print("\n".join(["QueueURL:%s" % item for item in queueurl_list]))
+                print("\nListQueueNumber:%s" % len(queueurl_list))
             if nextmarker != "":
-                print "NextMarker:%s" % nextmarker
+                print("NextMarker:%s" % nextmarker)
         except MNSExceptionBase, e:
             MNSCmd.cmd_exception(args[0], e)
 
@@ -275,12 +275,12 @@ class MNSCmd:
             MNSCmd.cmd_succeed(args[0])
 
             if len(topicurl_list) == 0:
-                print "Topic not exist in this account."
+                print("Topic not exist in this account.")
             else:
-                print "\n".join(["TopicURL:%s" % item for item in topicurl_list])
-                print "\nListTopicNumber:%s" % len(topicurl_list)
+                print("\n".join(["TopicURL:%s" % item for item in topicurl_list]))
+                print("\nListTopicNumber:%s" % len(topicurl_list))
             if nextmarker != "":
-                print "NextMarker:%s" % nextmarker
+                print("NextMarker:%s" % nextmarker)
         except MNSExceptionBase, e:
             MNSCmd.cmd_exception(args[0], e)
 
@@ -351,12 +351,12 @@ class MNSCmd:
             MNSCmd.cmd_succeed(args[0])
 
             if len(suburl_list) == 0:
-                print "Subscription not exist in this account."
+                print("Subscription not exist in this account.")
             else:
-                print "\n".join(["SubscriptionURL:%s" % item for item in suburl_list])
-                print "\nListSubscriptionNumber:%s" % len(suburl_list)
+                print("\n".join(["SubscriptionURL:%s" % item for item in suburl_list]))
+                print("\nListSubscriptionNumber:%s" % len(suburl_list))
             if nextmarker != "":
-                print "NextMarker:%s" % nextmarker
+                print("NextMarker:%s" % nextmarker)
         except MNSExceptionBase, e:
             MNSCmd.cmd_exception(args[0], e)
 
@@ -405,7 +405,7 @@ class MNSCmd:
     @staticmethod
     def miss_parameters(condition, args):
         if condition:
-            print "%s miss parameters." % args[0]
+            print("%s miss parameters." % args[0])
             print_help(args[0])
 
     @staticmethod
@@ -454,28 +454,28 @@ class MNSCmd:
 
     @staticmethod
     def cmd_succeed(action, otherinfo=""):
-        print "%s succeed!\n%s" % (action, otherinfo)
-
+        print("%s succeed!\n%s" % (action, otherinfo)
+)
     @staticmethod
     def cmd_exception(action, e):
-        print "%s fail!\nException:%s" % (action, e)
-
+        print("%s fail!\nException:%s" % (action, e)
+)
     @staticmethod
     def print_attr(attrMap):
-        print "\n".join(["%s:%s" % (k.ljust(30),v) for k,v in attrMap.items()])
-
+        print("\n".join(["%s:%s" % (k.ljust(30),v) for k,v in attrMap.items()])
+)
 def print_help(key = None):
-    print "==============================================="
+    print("===============================================")
     if key is None:
-        print 10*"-" + "Base Command" + 10*"-"
-        print "\n".join(["%s %s" % (item[0].ljust(20),item[1]) for item in CMD_LIST])
-        print "\n" + 10*"-" + "Queue Command" + 10*"-"
-        print "\n".join(["%s %s" % (item[0].ljust(20),item[1]) for item in QUEUE_CMD_LIST])
-        print "\n" + 10*"-" + "Topic Command" + 10*"-"
-        print "\n".join(["%s %s" % (item[0].ljust(20),item[1]) for item in TOPIC_CMD_LIST])
+        print(10*"-" + "Base Command" + 10*"-")
+        print("\n".join(["%s %s" % (item[0].ljust(20),item[1]) for item in CMD_LIST]))
+        print("\n" + 10*"-" + "Queue Command" + 10*"-")
+        print("\n".join(["%s %s" % (item[0].ljust(20),item[1]) for item in QUEUE_CMD_LIST]))
+        print("\n" + 10*"-" + "Topic Command" + 10*"-")
+        print("\n".join(["%s %s" % (item[0].ljust(20),item[1]) for item in TOPIC_CMD_LIST]))
     else:
-        print "%s helpinfo:\n%s" % (key, CMD_RULES[key])
-    print "\n==============================================="
+        print("%s helpinfo:\n%s" % (key, CMD_RULES[key]))
+    print("\n===============================================")
     sys.exit(1)
 
 if __name__ == "__main__":
@@ -524,8 +524,8 @@ if __name__ == "__main__":
         mns_cmd.setup_credentials(options)
 
     if args[0] not in CMD_RULES.keys():
-        print "unsupported command : %s" % args[0]
-        print "use --help for more information"
+        print("unsupported command : %s" % args[0])
+        print("use --help for more information")
         sys.exit(1)
 
     if options.info:

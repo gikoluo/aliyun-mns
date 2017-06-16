@@ -23,10 +23,9 @@ my_topic = my_account.get_topic(topic_name)
 topic_meta = TopicMeta()
 try:
     topic_url = my_topic.create(topic_meta)
-    print "Create Topic Succeed! TopicName:%s\n" % topic_name
+    print("Create Topic Succeed! TopicName:%s\n" % topic_name)
 except MNSExceptionBase, e:
     if e.type == "TopicAlreadyExist":
-        print "Topic already exist, please delete it before creating or use it directly."
+        print("Topic already exist, please delete it before creating or use it directly.")
         sys.exit(0)
-    print "Create Topic Fail! Exception:%s\n" % e
-
+    print("Create Topic Fail! Exception:%s\n" % e)

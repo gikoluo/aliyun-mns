@@ -21,16 +21,17 @@ my_topic = my_account.get_topic(topic_name)
 
 #循环发布多条消息
 msg_count = 3
-print "%sPublish Message To Topic%s\nTopicName:%s\nMessageCount:%s\n" % (10*"=", 10*"=", topic_name, msg_count)
-
+print("%sPublish Message To Topic%s\nTopicName:%s\nMessageCount:%s\n" % (10*"=", 10*"=", topic_name, msg_count)
+)
 for i in range(msg_count):
     try:
         msg_body = "I am test message %s." % i
         msg = TopicMessage(msg_body)
         re_msg = my_topic.publish_message(msg)
-        print "Publish Message Succeed. MessageBody:%s MessageID:%s" % (msg_body, re_msg.message_id)
+        print("Publish Message Succeed. MessageBody:%s MessageID:%s" % (msg_body, re_msg.message_id))
     except MNSExceptionBase,e:
         if e.type == "TopicNotExist":
-            print "Topic not exist, please create it."
+            print("Topic not exist, please create it.")
             sys.exit(1)
-        print "Publish Message Fail. Exception:%s" % e
+        print("Publish Message Fail. Exception:%s" % e
+)

@@ -14,7 +14,8 @@ from mns.account import Account
 from mns.queue import *
 from mns.topic import *
 from mns.subscription import *
-import ConfigParser
+from mns.compat import ConfigParser
+
 
 cfgFN = "sample.cfg"
 required_ops = [("Base", "AccessKeyId"), ("Base", "AccessKeySecret"), ("Base", "Endpoint")]
@@ -63,10 +64,10 @@ queue_meta.set_logging_enabled(True)
 try:
     queue_url = my_queue.create(queue_meta)
     sys.stdout.write("Create Queue Succeed!\nQueueURL:%s\n\n" % queue_url)
-except MNSExceptionBase, e:
+except MNSExceptionBase as e:
     sys.stderr.write("Create Queue Fail!\nException:%s\n\n" % e)
     sys.exit(1)
-
+    
 #修改队列属性
 ## message被receive后，持续不可消费的时间   50秒
 ## message body的最大长度                   5120Byte
@@ -82,7 +83,7 @@ queue_meta.set_polling_wait_seconds(10)
 try:
     queue_url = my_queue.set_attributes(queue_meta)
     sys.stdout.write("Set Queue Attributes Succeed!\n\n")
-except MNSExceptionBase, e:
+except MNSExceptionBase as e:
     sys.stderr.write("Set Queue Attributes Fail!\nException:%s\n\n" % e)
     sys.exit(1)
 
@@ -106,7 +107,7 @@ try:
                        queue_meta.polling_wait_seconds, queue_meta.active_messages,
                        queue_meta.inactive_messages, queue_meta.delay_messages,
                        queue_meta.create_time, queue_meta.last_modify_time))
-except MNSExceptionBase, e:
+except MNSExceptionBase as e:
     sys.stderr.write("Get Queue Attributes Fail!\nException:%s\n\n" % e)
     sys.exit(1)
 
@@ -128,7 +129,7 @@ try:
             break
         marker = next_marker
     sys.stdout.write("List Queue Succeed! Total Queue Count:%s!\n\n" % total_qcount)
-except MNSExceptionBase, e:
+except MNSExceptionBase as e:
     sys.stderr.write("List Queue Fail!\nException:%s\n\n" % e)
     sys.exit(1)
 
@@ -145,7 +146,7 @@ message.set_priority(10)
 try:
     send_msg = my_queue.send_message(message)
     sys.stdout.write("Send Message Succeed.\nMessageBody:%s\nMessageId:%s\nMessageBodyMd5:%s\n\n" % (msg_body, send_msg.message_id, send_msg.message_body_md5))
-except MNSExceptionBase, e:
+except MNSExceptionBase as e:
     sys.stderr.write("Send Message Fail!\nException:%s\n\n" % e)
     sys.exit(1)
 
@@ -169,7 +170,7 @@ try:
                        peek_msg.message_body, peek_msg.dequeue_count,
                        peek_msg.enqueue_time,  peek_msg.first_dequeue_time,
                        peek_msg.priority))
-except MNSExceptionBase, e:
+except MNSExceptionBase as e:
     sys.stderr.write("Peek Message Fail!\nException:%s\n\n" % e)
     sys.exit(1)
 
@@ -192,7 +193,7 @@ try:
                        recv_msg.enqueue_time, recv_msg.first_dequeue_time,
                        recv_msg.priority, recv_msg.next_visible_time,
                        recv_msg.receipt_handle))
-except MNSExceptionBase, e:
+except MNSExceptionBase as e:
     sys.stderr.write("Receive Message Fail!\nException:%s\n\n" % e)
     sys.exit(1)
 
@@ -206,7 +207,7 @@ try:
     change_msg_vis = my_queue.change_message_visibility(recv_msg.receipt_handle, 35)
     sys.stdout.write("Change Message Visibility Succeed!\nReceiptHandle:%s\nNextVisibleTime:%s\n\n" %
                       (change_msg_vis.receipt_handle, change_msg_vis.next_visible_time))
-except MNSExceptionBase, e:
+except MNSExceptionBase as e:
     sys.stderr.write("Change Message Visibility Fail!\nException:%s\n\n" % e)
     sys.exit(1)
 
@@ -215,7 +216,7 @@ except MNSExceptionBase, e:
 try:
     my_queue.delete_message(change_msg_vis.receipt_handle)
     sys.stdout.write("Delete Message Succeed.\n\n")
-except MNSExceptionBase, e:
+except MNSExceptionBase as e:
     sys.stderr.write("Delete Message Fail!\nException:%s\n\n" % e)
     sys.exit(1)
 
@@ -233,7 +234,7 @@ try:
     sys.stdout.write("Batch Send Message Succeed.")
     for msg in send_msgs:
         sys.stdout.write("MessageId:%s\nMessageBodyMd5:%s\n\n" % (msg.message_id, msg.message_body_md5))
-except MNSExceptionBase, e:
+except MNSExceptionBase as e:
     sys.stderr.write("Batch Send Message Fail!\nException:%s\n\n" % e)
     sys.exit(1)
 
@@ -253,7 +254,7 @@ try:
                            msg.message_body, msg.dequeue_count,
                            msg.enqueue_time, msg.first_dequeue_time,
                            msg.priority))
-except MNSExceptionBase, e:
+except MNSExceptionBase as e:
     sys.stderr.write("Batch Peek Message Fail!\nException:%s\n\n" % e)
     sys.exit(1)
 
@@ -277,7 +278,7 @@ try:
                            msg.enqueue_time, msg.first_dequeue_time,
                            msg.priority, msg.next_visible_time,
                            msg.receipt_handle))
-except MNSExceptionBase, e:
+except MNSExceptionBase as e:
     sys.stderr.write("Batch Receive Message Fail!\nException:%s\n\n" % e)
     sys.exit(1)
 
@@ -287,7 +288,7 @@ try:
     receipt_handle_list = [msg.receipt_handle for msg in recv_msgs]
     my_queue.batch_delete_message(receipt_handle_list)
     sys.stdout.write("Batch Delete Message Succeed.\n")
-except MNSExceptionBase, e:
+except MNSExceptionBase as e:
     sys.stderr.write("Batch Delete Message Fail!\nException:%s\n\n" % e)
     sys.exit(1)
 
@@ -295,7 +296,7 @@ except MNSExceptionBase, e:
 try:
     my_queue.delete()
     sys.stdout.write("Delete Queue Succeed!\n\n")
-except MNSExceptionBase, e:
+except MNSExceptionBase as e:
     sys.stderr.write("Delete Queue Fail!\nException:%s\n\n" % e)
     sys.exit(1)
 
@@ -309,7 +310,7 @@ topic_meta.set_maximum_message_size(10240)
 try:
     topic_url = my_topic.create(topic_meta)
     sys.stdout.write("Create Topic Succeed!\nTopicURL:%s\n\n" % topic_url)
-except MNSExceptionBase, e:
+except MNSExceptionBase as e:
     sys.stderr.write("Create Topic Fail!\nException:%s\n\n" % e)
     sys.exit(1)
 
@@ -321,7 +322,7 @@ topic_meta.set_logging_enabled(True)
 try:
     my_topic.set_attributes(topic_meta)
     sys.stdout.write("Set Topic Attributes Succeed!\n\n")
-except MNSExceptionBase, e:
+except MNSExceptionBase as e:
     sys.stderr.write("Set Topic Attributes Fail!\nException:%s\n\n" % e)
     sys.exit(1)
 
@@ -334,7 +335,7 @@ except MNSExceptionBase, e:
 try:
     topic_meta = my_topic.get_attributes()
     sys.stdout.write("Get Topic Attributes Succeed!\n%s" % topic_meta)
-except MNSExceptionBase, e:
+except MNSExceptionBase as e:
     sys.stderr.write("Get Topic Attributes Fail!\nException:%s\n\n" % e)
     sys.exit(1)
 
@@ -356,7 +357,7 @@ try:
             break
         marker = next_marker
     sys.stdout.write("List Topic Succeed! Total Topic Count:%s\n\n" % total_count)
-except MNSExceptionBase, e:
+except MNSExceptionBase as e:
     sys.stderr.write("List Queue Fail!\nException:%s\n\n" % e)
     sys.exit(1)
 
@@ -372,7 +373,7 @@ my_sub = my_topic.get_subscription("MySubscription-%s" % time.strftime("%y%m%d-%
 try:
     sub_url = my_sub.subscribe(sub_meta)
     sys.stdout.write("Subscribe Topic Succeed!\nSubscriptionURL:%s\n\n" % sub_url)
-except MNSExceptionBase, e:
+except MNSExceptionBase as e:
     sys.stderr.write("Subscribe Topic Fail!\nException:%s\n\n" % e)
     sys.exit(1)
 
@@ -382,7 +383,7 @@ sub_meta = SubscriptionMeta(notify_strategy=SubscriptionNotifyStrategy.EXPONENTI
 try:
     my_sub.set_attributes(sub_meta)
     sys.stdout.write("Set Subscriptoin Attributes Succeed!\n\n")
-except MNSExceptionBase, e:
+except MNSExceptionBase as e:
     sys.stderr.write("Set Subscriptoin Attributes Fail!\nExceptoin:%s\n\n" % e)
     sys.exit(1)
 
@@ -393,7 +394,7 @@ except MNSExceptionBase, e:
 try:
     sub_meta = my_sub.get_attributes()
     sys.stdout.write("Get Subscription Attributes Succeed!\n%s" % sub_meta)
-except MNSExceptionBase, e:
+except MNSExceptionBase as e:
     sys.stderr.write("Get Subscription Attributes Fail!\nException:%s\n\n" % e)
     sys.exit(1)
 
@@ -415,7 +416,7 @@ try:
             break
         marker = next_marker
     sys.stdout.write("List Subscription Succeed! Subscription Count:%s\n\n" % total_count)
-except MNSExceptionBase, e:
+except MNSExceptionBase as e:
     sys.stderr.write("List Subscription Fail!\nException:%s\n\n" % e)
     sys.exit(1)
 
@@ -431,6 +432,6 @@ message = TopicMessage(msg_body, msg_tag)
 try:
     re_msg = my_topic.publish_message(message)
     sys.stdout.write("Publish Message Succeed.\nMessageBody:%s\nMessageTag:%s\nMessageId:%s\nMessageBodyMd5:%s\n\n" % (msg_body, msg_tag, re_msg.message_id, re_msg.message_body_md5))
-except MNSExceptionBase, e:
+except MNSExceptionBase as e:
     sys.stderr.write("Publish Message Fail!\nException:%s\n\n" % e)
     sys.exit(1)

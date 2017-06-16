@@ -22,15 +22,16 @@ my_queue = my_account.get_queue(queue_name)
 #循环发送多条消息
 msg_count = 3
 
-print "%sSend Message To Queue%s\nQueueName:%s\nMessageCount:%s\n" % (10*"=", 10*"=", queue_name, msg_count)
+print("%sSend Message To Queue%s\nQueueName:%s\nMessageCount:%s\n" % (10*"=", 10*"=", queue_name, msg_count))
 for i in range(msg_count):
     try:
         msg_body = "I am test message %s." % i
         msg = Message(msg_body)
         re_msg = my_queue.send_message(msg)
-        print "Send Message Succeed! MessageBody:%s MessageID:%s" % (msg_body, re_msg.message_id)
+        print("Send Message Succeed! MessageBody:%s MessageID:%s" % (msg_body, re_msg.message_id))
     except MNSExceptionBase, e:
         if e.type == "QueueNotExist":
-            print "Queue not exist, please create queue before send message."
+            print("Queue not exist, please create queue before send message.")
             sys.exit(0)
-        print "Send Message Fail! Exception:%s\n" % e
+        print("Send Message Fail! Exception:%s\n" % e
+)

@@ -22,6 +22,7 @@ my_topic = my_account.get_topic(topic_name)
 #删除主题
 try:
     my_topic.delete()
-    print "Delete Topic Succeed! TopicName:%s\n" % topic_name
+    print("Delete Topic Succeed! TopicName:%s\n" % topic_name)
 except MNSExceptionBase, e:
-    print "Delete Topic Fail! Exception:%s\n" % e
+    print("Delete Topic Fail! Exception:%s\n" % e
+)
