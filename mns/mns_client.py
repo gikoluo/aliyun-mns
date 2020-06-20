@@ -108,8 +108,9 @@ class MNSClient:
         #handle result, make response
         resp.status = resp_inter.status
         resp.header = resp_inter.header
-        print(resp)
-        print(resp.header)
+        if self.logger:
+            self.logger.info(resp)
+            self.logger.info(resp.header)
         self.check_status(req_inter, resp_inter, resp)
         if resp.error_data == "":
             resp.queue_url = resp.header["location"]
@@ -224,7 +225,8 @@ class MNSClient:
 
         #make request internal
         req_inter = RequestInternal(req.method, uri = "/%s/%s/%s" % (URISEC_QUEUE, req.queue_name, URISEC_MESSAGE))
-        print(req)
+        if self.logger:
+            self.logger.info(req)
         req_inter.data = MessageEncoder.encode(req)
         self.build_header(req, req_inter)
 
@@ -735,9 +737,11 @@ class MNSClient:
         tmp_key = self.access_key # if isinstance(self.access_key, str) else self.access_key
         h = hmac.new(tmp_key.encode('utf-8'), string_to_sign.encode('utf-8'), hashlib.sha1)
         signature = base64.b64encode(h.digest()).decode()
-        print("DEBUG:", tmp_key, signature, string_to_sign)
+        if self.logger:
+            self.logger.debug("DEBUG:", tmp_key, signature, string_to_sign)
         signature = ("MNS %s:%s" % (self.access_id, signature))
-        print(signature)
+        if self.logger:
+            self.logger.info(signature)
         return signature
 
     def get_element(self, name, container):
@@ -747,7 +751,8 @@ class MNSClient:
             return ""
 
     def check_status(self, req_inter, resp_inter, resp, decoder=ErrorDecoder):
-        print (resp.header)
+        if self.logger:
+            self.logger.info(resp.header)
         if resp_inter.status >= 200 and resp_inter.status < 400:
             resp.error_data = ""
         else:
